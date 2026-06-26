@@ -6,7 +6,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import './App.css'
 
 const accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string
-const center: [number, number] = [-71.05953, 42.36290]
+const center: [number, number] = [-98.25238, 37.45909]
 
 function App() {
   const mapRef = useRef<mapboxgl.Map | null>(null)
@@ -19,8 +19,31 @@ function App() {
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current!,
       center: center,
-      zoom: 13,
+      zoom: 4,
     })
+
+    mapRef.current.on('style.load', () => {
+      mapRef.current?.addSource('metros', {
+        'type': 'geojson',
+        'data': '/metros.json'
+      })
+
+      mapRef.current?.addLayer({
+        id: 'metros-circles',
+        type: 'circle',
+        slot: 'middle',
+        source: 'metros',
+        paint: {
+          'circle-color': 'blue',
+          'circle-radius': 5,
+          'circle-stroke-color': '#FFFFFF',
+          'circle-stroke-width': 2
+
+        }
+      })
+    })
+
+
 
     return () => {
       mapRef.current?.remove()
