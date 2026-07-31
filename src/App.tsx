@@ -14,15 +14,38 @@ function App() {
   const [inputValue, setInputValue] = useState('')
 
   useEffect(() => {
-    mapboxgl.accessToken = accessToken
 
     mapRef.current = new mapboxgl.Map({
+      accessToken: accessToken,
       container: mapContainerRef.current!,
       center: center,
       zoom: 4,
+      config: {
+        basemap: {
+            theme: 'faded',
+            colorMotorways: "#e5f5dc",
+            colorTrunks: "#e5f5dc",
+            colorRoads: "#e5f5dc",
+            colorGreenspace: "#e3eece",
+            showPedestrianRoads: false,
+            showPointOfInterestLabels: false,
+            showRoadLabels: false,
+            showIndoorLabels: false,
+            colorPlaceLabels: "#574b1e",
+        }
+    },
     })
 
-    mapRef.current.on('style.load', () => {
+    mapRef.current?.on('style.load', () => {
+
+      mapRef.current?.addSource('mapbox-dem', {
+        type: 'raster-dem',
+        url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+        tileSize: 512,
+        maxzoom: 14
+      });
+      mapRef.current?.setTerrain({ source: 'mapbox-dem', exaggeration: 2 });
+
       mapRef.current?.addSource('metros', {
         'type': 'geojson',
         'data': '/metros.json'
@@ -34,14 +57,30 @@ function App() {
         slot: 'middle',
         source: 'metros',
         paint: {
-          'circle-color': 'blue',
-          'circle-radius': 5,
+          'circle-color': [
+              'interpolate',
+              ['linear'],
+              ['get', 'newHomesPer1K22'],
+               0,   '#2166ac',   // low  → blue
+              10,  '#67a9cf',
+              20,  '#f7f7f7',   // mid  → neutral
+              30,  '#ef8a62',
+              40,  '#b2182b'    // high → red
+          ],
+          'circle-radius': 10,
           'circle-stroke-color': '#FFFFFF',
           'circle-stroke-width': 2
-
         }
       })
     })
+
+    mapRef.current.addInteraction('city-click', {
+      type: 'click',
+      target: { layerId: 'metros-circles' },
+      handler: (e) => {
+        console.log("hi", e.feature?.properties)
+      }
+    });
 
 
 
