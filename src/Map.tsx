@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'react'
 import mapboxgl from 'mapbox-gl'
 import { SearchBox } from '@mapbox/search-js-react'
+import metros from './assets/metros.json'
 
 import 'mapbox-gl/dist/mapbox-gl.css'
 import './App.css'
@@ -50,7 +51,7 @@ function Map() {
 
       mapRef.current?.addSource('metros', {
         'type': 'geojson',
-        'data': '/metros.json'
+        'data':  metros
       })
 
       mapRef.current?.addLayer({
@@ -62,7 +63,7 @@ function Map() {
           'circle-color': [
               'interpolate',
               ['linear'],
-              ['get', 'newHomesPer1K22'],
+              ['get', 'newHomesPer1k22'],
               //  0,   '#cde2fb',   // lightest — fewest new homes per 1K
                 0,  '#86b6ef',
                 20,  '#3987e5',
@@ -82,11 +83,11 @@ function Map() {
     })
 
      // Create a popup, but don't add it to the map yet
-    const popup = new mapboxgl.Popup({
-      closeButton: false,
-      closeOnClick: false,
-      offset: [0, -20]
-    });
+    // const popup = new mapboxgl.Popup({
+    //   closeButton: false,
+    //   closeOnClick: false,
+    //   offset: [0, -20]
+    // });
 
     mapRef.current.addInteraction('city-click', {
       type: 'click',
@@ -101,12 +102,12 @@ function Map() {
         type: 'mouseenter',
         target: { layerId: 'metros-circles' },
         handler: (e) => {
-            //mapRef.current.getCanvas().style.cursor = 'pointer';
+             mapRef.current.getCanvas().style.cursor = 'pointer';
              // Position the popup at the cursor location and show it
-          popup
-            .setLngLat(e.lngLat)
-            .setHTML(`<strong>New Houses per1K 2022: ${e.feature?.properties.newHomesPer1K22}</strong>`)
-            .addTo(mapRef.current);
+        //   popup
+        //     .setLngLat(e.lngLat)
+        //     .setHTML(`<strong>New Houses per1K 2022: ${e.feature?.properties.newHomesPer1K22}</strong>`)
+        //     .addTo(mapRef.current);
         }
     });
 
@@ -127,7 +128,7 @@ function Map() {
   }, [])
 
   return (
-    <>
+    <div className="w-10/12">
       <div style={{
         margin: '10px 10px 0 0',
         width: 300,
@@ -146,8 +147,8 @@ function Map() {
           marker
         />
       </div>
-      <div id='map-container' ref={mapContainerRef} />
-    </>
+      <div className="z-0" id='map-container' ref={mapContainerRef} />
+    </div>
   )
 }
 
