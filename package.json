@@ -15,6 +15,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "csv-parse": "^6.2.1",
     "mapbox-gl": "^3.26.0",
+    "radix-ui": "^1.6.7",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "tailwindcss": "^4.3.3"
