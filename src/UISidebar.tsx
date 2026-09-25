@@ -1,18 +1,26 @@
-
 import metros from './assets/metros.json'
+import { useAppContext } from './Providers/AppContext'
+import type { ChangeEvent } from 'react'
 
 const UISidebar = ({}) => {
+    const { setYear } = useAppContext()
+
+    function handleYearChange(e:ChangeEvent<HTMLSelectElement>) {
+        setYear(e.target.value)
+    }
+
     return (
         <div className='w-2/12 h-full bg-white px-4 py-4'>
             <h3 className="text-2xl font-bold mb-4">Filters</h3>
             <div className="flex justify-between items-center mb-4">
                 <label className="mr-2 text-l font-bold">Choose Year</label>
-                <select className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                <select 
+                    className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    onChange={handleYearChange}>
                     <option>2022</option>
                     <option>2024</option>
                 </select>
             </div>
-
             <label className="mr-2 text-l font-bold">Metros by Rank</label>
             <div className="overflow-scroll h-full">
                 {metros.features.map( metro => (

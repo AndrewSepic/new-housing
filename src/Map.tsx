@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react'
 import mapboxgl from 'mapbox-gl'
 import { SearchBox } from '@mapbox/search-js-react'
 import metros from './assets/metros.json'
+import { useAppContext } from './Providers/AppContext'
 
 import 'mapbox-gl/dist/mapbox-gl.css'
 import './App.css'
@@ -13,6 +14,9 @@ function Map() {
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const mapContainerRef = useRef<HTMLDivElement | null>(null)
   const [inputValue, setInputValue] = useState('')
+  const [ isMapLoaded, setIsMapLoaded ] = useState(false)
+  const { year } = useAppContext()
+
 
   useEffect(() => {
 
@@ -54,32 +58,23 @@ function Map() {
         'data':  metros
       })
 
-      mapRef.current?.addLayer({
-        id: 'metros-circles',
-        type: 'circle',
-        slot: 'middle',
-        source: 'metros',
-        paint: {
-          'circle-color': [
-              'interpolate',
-              ['linear'],
-              ['get', 'newHomesPer1k22'],
-              //  0,   '#cde2fb',   // lightest — fewest new homes per 1K
-                0,  '#86b6ef',
-                20,  '#3987e5',
-                40,  '#1c5cab',
-                60,  '#0d366b'    // darkest — most new homes per 1K
-          ],
-          'circle-radius': [
-            'interpolate', ['linear'], ['sqrt', ['get', 'population']],
-            244.95,   4,      // sqrt(60,000)
-            509.90,   10,     // sqrt(260,000)
-            1581.14,  17      // sqrt(2,500,000) — cap here
-          ],
-          'circle-stroke-color': '#FFFFFF',
-          'circle-stroke-width': 1
-        }
-      })
+        mapRef.current?.addLayer({
+          id: 'metros-circles',
+          type: 'circle',
+          slot: 'middle',
+          source: 'metros',
+          paint: {
+            'circle-radius': [
+              'interpolate', ['linear'], ['sqrt', ['get', 'population']],
+              244.95,   4,      // sqrt(60,000)
+              509.90,   10,     // sqrt(260,000)
+              1581.14,  17      // sqrt(2,500,000) — cap here
+            ],
+            'circle-stroke-color': '#FFFFFF',
+            'circle-stroke-width': 1
+          }
+        })
+        setIsMapLoaded(true)
     })
 
      // Create a popup, but don't add it to the map yet
@@ -126,6 +121,27 @@ function Map() {
       mapRef.current?.remove()
     }
   }, [])
+
+  useEffect(() => {
+    console.log("runs")
+    const currentYear = year.includes('22') ? 'newHomesPer1k22' : 'newHomesPer1k24'
+
+    if(isMapLoaded) {
+      mapRef.current?.setPaintProperty('metros-circles', 'circle-color', [
+                'interpolate',
+                ['linear'],
+                ['get', currentYear],
+                //  0,   '#cde2fb',   // lightest — fewest new homes per 1K
+                  0,  '#86b6ef',
+                  20,  '#3987e5',
+                  40,  '#1c5cab',
+                  60,  '#0d366b'    // darkest — most new homes per 1K
+            ]
+      )
+    }
+  
+
+  }, [year, isMapLoaded])
 
   return (
     <div className="w-10/12">
