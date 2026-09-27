@@ -10,7 +10,7 @@ const UISidebar = ({}) => {
     }
 
     return (
-        <div className='w-2/12 h-full bg-white px-4 py-4'>
+        <div className='w-2/12 flex flex-col bg-white px-4 py-4'>
             <h3 className="text-2xl font-bold mb-4">Filters</h3>
             <div className="flex justify-between items-center mb-4">
                 <label className="mr-2 text-l font-bold">Choose Year</label>

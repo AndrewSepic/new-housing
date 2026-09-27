@@ -78,31 +78,48 @@ function Map() {
     })
 
      // Create a popup, but don't add it to the map yet
-    // const popup = new mapboxgl.Popup({
-    //   closeButton: false,
-    //   closeOnClick: false,
-    //   offset: [0, -20]
-    // });
-
-    mapRef.current.addInteraction('city-click', {
-      type: 'click',
-      target: { layerId: 'metros-circles' },
-      handler: (e) => {
-        console.log("hi", e.feature?.properties)
-      }
+    const popup = new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: false,
+      offset: [0, -20]
     });
+
+
+	mapRef.current.addInteraction('city-click', {
+		type: 'click',
+		target: { layerId: 'metros-circles' },
+		handler: (e) => {
+			if(e.feature !== undefined && mapRef.current !== null) {
+				const city = e.feature.properties
+				popup
+				.setLngLat(e.lngLat)
+				.setHTML(`<div>
+					<ul>
+						<h3>${city.name}, ${city.state}</h3>
+						<li>Median Price: ${city.medianPrice}</li>
+						<li>Population: ${city.population}</li>
+						<li>New Homes Per 1K (2022): ${city.newHomesPer1k22}</li>
+						<li>New Homes Per 1K (2024): ${city.newHomesPer1k24}</li>
+						<li>Total New Homes (2022): ${city.totalNewHomes22}</li>
+						<li>Total New Homes (2024): ${city.totalNewHomes24}</li>
+					</ul>
+					</div>`)
+				.addTo(mapRef.current);
+			}
+			
+		}
+	});
+	
 
     // Change cursor to pointer when hovering over a layer
     mapRef.current.addInteraction('mouseenter-interaction', {
         type: 'mouseenter',
         target: { layerId: 'metros-circles' },
         handler: (e) => {
+
              mapRef.current.getCanvas().style.cursor = 'pointer';
              // Position the popup at the cursor location and show it
-        //   popup
-        //     .setLngLat(e.lngLat)
-        //     .setHTML(`<strong>New Houses per1K 2022: ${e.feature?.properties.newHomesPer1K22}</strong>`)
-        //     .addTo(mapRef.current);
+    
         }
     });
 
